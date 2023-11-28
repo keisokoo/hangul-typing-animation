@@ -1,8 +1,8 @@
 # hangul-typing-animation
 
-한글 타이핑 애니메이션을 쉽게 구현할 수 있는 라이브러리입니다.
+`hangul-typing-animation`은 한글 타이핑 애니메이션을 쉽게 구현할 수 있는 라이브러리입니다.
 
-의존성이 없기에 기본적인 DOM이나 Node.js 환경은 물론, React, Vue, Angular 등의 프레임워크에서도 사용할 수 있습니다.
+의존성이 없기에 기본적인 `DOM`이나 `Node.js` 환경은 물론, `React`, `Vue`, `Angular` 등의 프레임워크에서도 사용할 수 있습니다.
 
 한글은 자소 단위로 분해되어 타이핑 애니메이션이 진행됩니다.
 
@@ -11,6 +11,11 @@
 이때 한글의 쌍자음과 쌍모음은 분리하지 않고 키보드 입력처럼 한번에 처리합니다.
 
 하지만 겹자음과 겹모음은 따로 분리되어 처리되도록 하였습니다.
+
+
+ 
+ 
+ 
 
 `hangul-typing-animation` is a simple hangul typing animation library.
 
@@ -24,8 +29,18 @@ During this process, Korean double consonants and double vowels are not separate
 
 However, combined consonants and vowels are separately decomposed and processed.
 
+ 
+  
+   
+
+ 
+
 ---
 
+ 
+  
+   
+   
 ## Installation
 
 ```bash
@@ -76,7 +91,9 @@ runAnimation()
 ---
 
 #### DelayOptions
-전제 (milliseconds) 단위 입니다.
+
+전체 (milliseconds) 단위 입니다.
+
 All options are in milliseconds.
 
 - **`perChar`** : 입력 문자 하나당 딜레이 시간 (Default: 40), per input char delay time (Default: 40), 
@@ -89,7 +106,9 @@ All options are in milliseconds.
 ## Usage for decompose and compose hangul(Optional) (한글 자소 분해, 재결합)
 
 애니메이션을 위해 한글을 자소 단위로 분해하고, 애니메이션이 끝난 후에는 다시 합쳐야 할 경우 사용합니다.
+
 쌍자음과 쌍모음은 분리하지 않고 키보드 입력처럼 한번에 처리합니다.
+
 하지만 겹자음과 겹모음은 따로 분리되어 처리되도록 하였습니다.
 
 ```typescript
