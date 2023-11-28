@@ -1,4 +1,3 @@
-"use strict";
 var CHOSUNG_LIST = [
     'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
 ];
@@ -11,7 +10,16 @@ var JONGSUNG_LIST = [
 var BASE_CODE = 0xAC00;
 var CHOSUNG_BASE = 588;
 var JUNGSUNG_BASE = 28;
-function decomposeHangul(text) {
+export function containsNewlineOrDot(text) {
+    return /\n|\./.test(text);
+}
+export function isIncludeJongsung(text) {
+    return JONGSUNG_LIST.includes(text);
+}
+export function isSpaceCharacter(text) {
+    return text === ' ' || text === '\n';
+}
+export function decomposeHangul(text) {
     var decomposed = [];
     for (var i = 0; i < text.length; i++) {
         var charCode = text.charCodeAt(i);
@@ -31,22 +39,7 @@ function decomposeHangul(text) {
     }
     return decomposed;
 }
-function containsNewlineOrDot(text) {
-    // 줄바꿈 또는 마침표가 있는지 확인하는 정규 표현식
-    return /\n|\./.test(text);
-}
-function isNonCharacterOrNumber(char) {
-    // 영어 알파벳, 한글 (완성형, 자모 포함), 숫자가 아닌 경우를 찾는 정규 표현식
-    return /[^a-zA-Z가-힣ㄱ-ㅎㅏ-ㅣ0-9]/.test(char);
-}
-function isIncludeJongsung(text) {
-    return JONGSUNG_LIST.includes(text);
-}
-function isSpaceCharacter(text) {
-    return text === ' ' || text === '\n';
-}
-// 사용 예시
-function combineHangul(decomposed) {
+export function combineHangul(decomposed) {
     return decomposed.map(function (jasoArray) {
         if (jasoArray.length === 1) {
             // 초성만 있는 경우
@@ -68,21 +61,26 @@ function combineHangul(decomposed) {
         return '';
     }).join('');
 }
-function typeStream(text) {
-    var decomposedText = decomposeHangul(text); // 이전에 만든 decomposeHangul 함수 사용
-    var typingElement = {
-        textContent: ''
-    };
+function typeStream(text, callback, delay) {
+    if (delay === void 0) { delay = {
+        perChar: 40,
+        perHangul: 80,
+        perWord: 160,
+        perSentence: 320
+    }; }
+    var decomposedText = decomposeHangul(text);
+    var textContent = '';
     var currentText = '';
     var charIndex = 0;
     var jasoIndex = 0;
+    var timeout;
     function typeCharacter() {
         if (charIndex < decomposedText.length) {
             var word = decomposedText[charIndex];
             var prevWord = charIndex > 0 ? decomposedText[charIndex - 1] : [];
             var currentCharJasos = word.slice(0, jasoIndex + 1);
             var currentJaso = currentCharJasos[currentCharJasos.length - 1];
-            var isWordLast = word.length > 1 && jasoIndex === word.length - 1;
+            var afterHangulCombination = word.length > 1 && jasoIndex === word.length - 1;
             var newLineOrEnd = false;
             var isSpaceChar = false;
             if (isSpaceCharacter(currentJaso))
@@ -90,26 +88,38 @@ function typeStream(text) {
             if (containsNewlineOrDot(currentJaso))
                 newLineOrEnd = true;
             var combinedChar = combineHangul([currentCharJasos]);
-            // 이전 글자가 종성을 가질 수 있는지, 현재 글자가 초성만 있는지 확인
             if (charIndex > 0 && prevWord.length === 2 && currentCharJasos.length === 1 && isIncludeJongsung(currentJaso)) {
-                // 이전 글자에 현재 초성을 종성으로 추가
                 var tempLastChar = prevWord.concat(currentJaso);
                 var combinedLastChar = combineHangul([tempLastChar]);
-                typingElement.textContent = currentText.slice(0, -1) + combinedLastChar;
+                textContent = currentText.slice(0, -1) + combinedLastChar;
             }
             else {
-                typingElement.textContent = currentText + combinedChar;
+                textContent = currentText + combinedChar;
             }
-            console.log('typingElement.textContent', typingElement.textContent);
             jasoIndex++;
             if (jasoIndex >= word.length) {
                 currentText += combinedChar;
                 charIndex++;
                 jasoIndex = 0;
             }
-            setTimeout(typeCharacter, newLineOrEnd ? 300 : isSpaceChar ? 120 : isWordLast ? 80 : 40); // 200ms 간격으로 다음 자소를 타이핑
+            timeout = setTimeout(typeCharacter, newLineOrEnd ? delay.perSentence : isSpaceChar ? delay.perWord : afterHangulCombination ? delay.perHangul : delay.perChar);
+            callback(textContent, {
+                decomposedText: decomposedText,
+                charIndex: charIndex,
+                jasoIndex: jasoIndex,
+                isEnd: false
+            });
+        }
+        else if (timeout) {
+            callback(textContent, {
+                decomposedText: decomposedText,
+                charIndex: charIndex,
+                jasoIndex: jasoIndex,
+                isEnd: true
+            });
+            clearTimeout(timeout);
         }
     }
     typeCharacter();
 }
-typeStream("\uC548\uB155\uD558\uC138\uC694, \uBC25\uC774\uBE71\uC774\n\uB418\uC5C8\uC2B5\uB2C8\uB2E4.\n\uADF8\uB9AC\uACE0 \uBB34\uAD81\uD654 \uAF43\uC774 \uD53C\uC5C8\uC2B5\uB2C8\uB2E4. and You are the best!\n1337"); // 타이핑 애니메이션 시작
+export default typeStream;
