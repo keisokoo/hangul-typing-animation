@@ -1,0 +1,13 @@
+declare const CHOSUNG_LIST: string[];
+declare const JUNGSUNG_LIST: string[];
+declare const JONGSUNG_LIST: string[];
+declare const BASE_CODE = 44032;
+declare const CHOSUNG_BASE = 588;
+declare const JUNGSUNG_BASE = 28;
+declare function decomposeHangul(text: string): string[][];
+declare function containsNewlineOrDot(text: string): boolean;
+declare function isNonCharacterOrNumber(char: string): boolean;
+declare function isIncludeJongsung(text: string): boolean;
+declare function isSpaceCharacter(text: string): boolean;
+declare function combineHangul(decomposed: string[][]): string;
+declare function typeStream(text: string): void;
