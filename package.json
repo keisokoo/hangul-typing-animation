@@ -24,6 +24,8 @@
   },
   "keywords": [
     "hangul",
+    "한글",
+    "자소",
     "typing",
     "animation",
     "react",
@@ -32,8 +34,16 @@
     "한글 타이핑 애니메이션",
     "typing stream"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "@keisokoo",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/keisokoo/hangul-typing-animation"
+  },
+  "bugs": {
+    "url": "https://github.com/keisokoo/hangul-typing-animation/issues"
+  },
+  "homepage": "https://github.com/keisokoo/hangul-typing-animation#readme",
   "packageManager": "yarn@4.0.2",
   "devDependencies": {
     "@babel/preset-env": "^7.23.3",

@@ -72,7 +72,7 @@ export type TypeStreamDelayOptions = {
 export type TypeStreamData = {
   decomposedText: string[][], charIndex: number, jasoIndex: number, lastJaso: string, isEnd?: boolean
 }
-export type TypeStreamCallback = (string: string, stream: {
+export type TypeStreamCallback = (typing: string, stream: {
   decomposedText: string[][], charIndex: number, jasoIndex: number, lastJaso: string, isEnd?: boolean
 }) => void
 export type TypeStreamResult = {
@@ -97,7 +97,7 @@ const defaultDelayOptions: TypeStreamDelayOptions = {
 function createTypeStream(delayOptions?: TypeStreamDelayOptions) {
   let currentAnimationId = 0;
   const typeStream: TypeStream =
-    function typeHangulStream(text: string, callback: (string: string, stream: TypeStreamData) => void, currentDelay?: TypeStreamDelayOptions) {
+    function typeHangulStream(text: string, callback: (typing: string, stream: TypeStreamData) => void, currentDelay?: TypeStreamDelayOptions) {
       return new Promise((resolve, reject) => {
         const currentDelayOptions = { defaultDelayOptions, ...delayOptions, ...currentDelay };
         const thisAnimationId = ++currentAnimationId;
@@ -138,9 +138,6 @@ function createTypeStream(delayOptions?: TypeStreamDelayOptions) {
               currentText += combinedChar;
               charIndex++;
               jasoIndex = 0;
-            }
-            if (newLine) {
-              console.log('new line', currentDelayOptions.perLine)
             }
             timeout = setTimeout(typeCharacter, newLine ? currentDelayOptions.perLine : endDot ? currentDelayOptions.perDot : isSpaceChar ? currentDelayOptions.perSpace : afterHangulCombination ? currentDelayOptions.perHangul : currentDelayOptions.perChar);
             callback(textContent, {
