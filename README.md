@@ -1,6 +1,30 @@
 # hangul-typing-animation
 
+한글 타이핑 애니메이션을 쉽게 구현할 수 있는 라이브러리입니다.
+
+의존성이 없기에 기본적인 DOM이나 Node.js 환경은 물론, React, Vue, Angular 등의 프레임워크에서도 사용할 수 있습니다.
+
+한글은 자소 단위로 분해되어 타이핑 애니메이션이 진행됩니다.
+
+영어나 숫자는 그대로 타이핑 애니메이션이 진행됩니다.
+
+이때 한글의 쌍자음과 쌍모음은 분리하지 않고 키보드 입력처럼 한번에 처리합니다.
+
+하지만 겹자음과 겹모음은 따로 분리되어 처리되도록 하였습니다.
+
 `hangul-typing-animation` is a simple hangul typing animation library.
+
+It has no dependencies, so it can be used in basic `DOM` or `Node.js` environments, as well as in frameworks like `React`, `Vue`, and `Angular`.
+
+Korean characters are decomposed into individual components (`jamos`) for the typing animation.
+
+English letters and numbers are animated as they are, without decomposition.
+
+During this process, Korean double consonants and double vowels are not separated and are treated as a single keyboard input.
+
+However, combined consonants and vowels are separately decomposed and processed.
+
+---
 
 ## Installation
 
@@ -12,40 +36,9 @@ or
 yarn add hangul-typing-animation
 ```
 
-## Usage for decompose and compose hangul (한글 자소 분해, 재결합)
+---
 
-```typescript
-import { decomposeHangul, composeHangul } from 'hangul-typing-animation';
-
-const decomposedText = decomposeHangul('안녕하세요. abc 123.')
-console.log(decomposedText)
-// result
-// [
-//   ['ㅇ', 'ㅏ', 'ㄴ'],
-//   ['ㄴ', 'ㅕ', 'ㅇ'],
-//   ['ㅎ', 'ㅏ'],
-//   ['ㅅ', 'ㅔ'],
-//   ['ㅇ', 'ㅛ'],
-//   ['.'],
-//   [' '],
-//   ['a'],
-//   ['b'],
-//   ['c'],
-//   [' '],
-//   ['1'],
-//   ['2'],
-//   ['3'],
-//   ['.'],
-// ]
-const composedText = composeHangul(decomposedText)
-console.log(composedText)
-// result 안녕하세요. abc 123.
-```
-
-
-## Usage for typing animation
-
-```typescript
+## Usage for typing animation (타이핑 애니메이션)
 
 ```html
 <div id="typing"></div>
@@ -54,23 +47,63 @@ console.log(composedText)
 ```typescript
 import { createTypeStream, delay } from 'hangul-typing-animation';
 
-const typeStream = createTypeStream();
+const typeStream = createTypeStream({
+  perChar: 40,
+  perHangul: 80,
+  perSpace: 0,
+  perLine: 0,
+  perDot: 320
+});
 
 const runAnimation = async () => {
   await delay(2000)
   await typeStream(
-    `무궁화 꽃이 피었습니다.
-    동해물과 백두산이 마르고 닳도록
-    하느님이 보우하사 우리나라 만세.
-    Korea history is very long. about 5000 years.
-    Korean is a language isolate spoken mainly in South Korea and North Korea by about 63 million people.`,
-    async (result, stream) => {
-      document.getElementById('typing').innerHTML = result;
+      `쌍자음과 쌍모음은 분리하지 않고 키보드 입력처럼 한번에 처리합니다.
+      겹자음과 겹모읍은 따로 분리되어 처리됩니다.
+      겹자모의 예는 다음과 같습니다.
+      꿹뷁뷹같은 글자, 읽다, 읎다. 핥다. 앉거나, 없다.
+      English or number also supported.
+      1234567890
+      예제 끝!`,
+    async (typing) => {
+      document.getElementById('typing').innerHTML = typing;
     }
   )
 }
 runAnimation()
 ```
+
+---
+
+#### DelayOptions
+전제 (milliseconds) 단위 입니다.
+All options are in milliseconds.
+
+- **`perChar`** : 입력 문자 하나당 딜레이 시간 (Default: 40), per input char delay time (Default: 40), 
+- **`perHangul`** : 한글의 완성형 하나당 딜레이 시간 (Default: 80), per composed hangul delay time (Default: 80),
+- **`perSpace`** : 공백 하나당 딜레이 시간 (Default: 0), per space delay time (Default: 0),
+- **`perLine`** : 줄바꿈 하나당 딜레이 시간 (Default: 0), per line delay time (Default: 0),
+- **`perDot`** : 마침표 하나당 딜레이 시간 (Default: 320), per dot delay time (Default: 320)
+
+
+## Usage for decompose and compose hangul(Optional) (한글 자소 분해, 재결합)
+
+애니메이션을 위해 한글을 자소 단위로 분해하고, 애니메이션이 끝난 후에는 다시 합쳐야 할 경우 사용합니다.
+쌍자음과 쌍모음은 분리하지 않고 키보드 입력처럼 한번에 처리합니다.
+하지만 겹자음과 겹모음은 따로 분리되어 처리되도록 하였습니다.
+
+```typescript
+import { decomposeHangul, composeHangul } from 'hangul-typing-animation';
+
+const decomposedText = decomposeHangul('앉았다.')
+console.log(decomposedText)
+// result [["ㅇ","ㅏ","ㄴㅈ"],["ㅇ","ㅏ","ㅆ"],["ㄷ","ㅏ"],["."]];
+const composedText = composeHangul(decomposedText)
+console.log(composedText)
+// result 앉았다.
+```
+
+
 
 
 ## Reference
