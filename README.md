@@ -12,10 +12,7 @@
 
 하지만 겹자음과 겹모음은 따로 분리되어 처리되도록 하였습니다.
 
-
- 
- 
- 
+<br/><br/>
 
 `hangul-typing-animation` is a simple hangul typing animation library.
 
@@ -29,18 +26,11 @@ During this process, Korean double consonants and double vowels are not separate
 
 However, combined consonants and vowels are separately decomposed and processed.
 
- 
-  
-   
 
- 
-
+<br/><br/>
 ---
+<br/><br/>
 
- 
-  
-   
-   
 ## Installation
 
 ```bash
@@ -51,13 +41,17 @@ or
 yarn add hangul-typing-animation
 ```
 
+<br/><br/>
 ---
+<br/><br/>
 
 ## Usage for typing animation (타이핑 애니메이션)
 
 ```html
 <div id="typing"></div>
 ```
+
+<br/><br/>
 
 ```typescript
 import { createTypeStream, delay } from 'hangul-typing-animation';
@@ -88,7 +82,9 @@ const runAnimation = async () => {
 runAnimation()
 ```
 
+<br/><br/>
 ---
+<br/><br/>
 
 #### DelayOptions
 
@@ -122,8 +118,9 @@ console.log(composedText)
 // result 앉았다.
 ```
 
-
-
+<br/><br/>
+<br/><br/>
+<br/><br/>
 
 ## Reference
 ```tsx
