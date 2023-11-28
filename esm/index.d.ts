@@ -1,17 +1,4 @@
-export declare function containsNewlineOrDot(text: string): boolean;
-export declare function isIncludeJongsung(text: string): boolean;
-export declare function isSpaceCharacter(text: string): boolean;
-export declare function decomposeHangul(text: string): string[][];
-export declare function combineHangul(decomposed: string[][]): string;
-declare function typeStream(text: string, callback: (string: string, stream: {
-    decomposedText: string[][];
-    charIndex: number;
-    jasoIndex: number;
-    isEnd?: boolean;
-}) => void, delay?: {
-    perHangul?: number;
-    perChar?: number;
-    perSentence?: number;
-    perSpace?: number;
-}): void;
-export default typeStream;
+export type { TypeStream, TypeStreamCallback, TypeStreamData, TypeStreamDelayOptions } from './typeStream';
+export { default as createTypeStream } from './typeStream';
+export { isNewLine, isDot, isInJongSung, isSpaceCharacter, delay } from './typeStream';
+export { decomposeHangul, composeHangul } from './typeStream';
