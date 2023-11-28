@@ -72,69 +72,77 @@ export type TypeStreamCallback = (string: string, stream: {
   decomposedText: string[][], charIndex: number, jasoIndex: number, lastJaso: string, isEnd?: boolean
 }) => void
 export type TypeStream = (text: string, callback: TypeStreamCallback, delay?: TypeStreamDelayOptions) => void
-const typeStream: TypeStream =
-  function typeHangulStream(text: string, callback: (string: string, stream: TypeStreamData) => void, delay: {
-    perHangul?: number,
-    perChar?: number,
-    perLineOrDot?: number,
-    perWord?: number,
-  } = {
-      perChar: 40,
-      perHangul: 80,
-      perWord: 160,
-      perLineOrDot: 320
-    }) {
-    const decomposedText = decomposeHangul(text);
-    let textContent = ''
-    let currentText: string = '';
-    let charIndex = 0;
-    let jasoIndex = 0;
-    let timeout: NodeJS.Timeout;
+export const delay = (milliseconds: number) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
 
-    function typeCharacter() {
-      if (charIndex < decomposedText.length) {
-        const word = decomposedText[charIndex];
-        const prevWord = charIndex > 0 ? decomposedText[charIndex - 1] : [];
-        const currentCharJasos = word.slice(0, jasoIndex + 1);
-        const currentJaso = currentCharJasos[currentCharJasos.length - 1];
-        const afterHangulCombination = word.length > 1 && jasoIndex === word.length - 1;
-        let newLineOrEnd = false;
-        let isSpaceChar = false;
-        if (isSpaceCharacter(currentJaso)) isSpaceChar = true;
-        if (isNewLineOrDot(currentJaso)) newLineOrEnd = true;
-        const combinedChar = composeHangul([currentCharJasos]);
-        if (charIndex > 0 && prevWord.length === 2 && currentCharJasos.length === 1 && isInJongSung(currentJaso)) {
-          let tempLastChar = prevWord.concat(currentJaso);
-          let combinedLastChar = composeHangul([tempLastChar]);
-          textContent = currentText.slice(0, -1) + combinedLastChar;
-        } else {
-          textContent = currentText + combinedChar;
+function createTypeStream(delayOptions: TypeStreamDelayOptions = {
+  perChar: 40,
+  perHangul: 80,
+  perWord: 160,
+  perLineOrDot: 320
+}) {
+  let currentAnimationId = 0;
+  const typeStream: TypeStream =
+    function typeHangulStream(text: string, callback: (string: string, stream: TypeStreamData) => void, currentDelay?: TypeStreamDelayOptions) {
+      const currentDelayOptions = { ...delayOptions, ...currentDelay };
+      const thisAnimationId = ++currentAnimationId;
+      const decomposedText = decomposeHangul(text);
+      let textContent = ''
+      let currentText: string = '';
+      let charIndex = 0;
+      let jasoIndex = 0;
+      let timeout: NodeJS.Timeout;
+
+      function typeCharacter() {
+        if (thisAnimationId !== currentAnimationId) {
+          return clearTimeout(timeout);
         }
-        jasoIndex++;
-        if (jasoIndex >= word.length) {
-          currentText += combinedChar;
-          charIndex++;
-          jasoIndex = 0;
+        if (charIndex < decomposedText.length) {
+          const word = decomposedText[charIndex];
+          const prevWord = charIndex > 0 ? decomposedText[charIndex - 1] : [];
+          const currentCharJasos = word.slice(0, jasoIndex + 1);
+          const currentJaso = currentCharJasos[currentCharJasos.length - 1];
+          const afterHangulCombination = word.length > 1 && jasoIndex === word.length - 1;
+          let newLineOrEnd = false;
+          let isSpaceChar = false;
+          if (isSpaceCharacter(currentJaso)) isSpaceChar = true;
+          if (isNewLineOrDot(currentJaso)) newLineOrEnd = true;
+          const combinedChar = composeHangul([currentCharJasos]);
+          if (charIndex > 0 && prevWord.length === 2 && currentCharJasos.length === 1 && isInJongSung(currentJaso)) {
+            let tempLastChar = prevWord.concat(currentJaso);
+            let combinedLastChar = composeHangul([tempLastChar]);
+            textContent = currentText.slice(0, -1) + combinedLastChar;
+          } else {
+            textContent = currentText + combinedChar;
+          }
+          jasoIndex++;
+          if (jasoIndex >= word.length) {
+            currentText += combinedChar;
+            charIndex++;
+            jasoIndex = 0;
+          }
+          timeout = setTimeout(typeCharacter, newLineOrEnd ? currentDelayOptions.perLineOrDot : isSpaceChar ? currentDelayOptions.perWord : afterHangulCombination ? currentDelayOptions.perHangul : currentDelayOptions.perChar);
+          callback(textContent, {
+            decomposedText,
+            charIndex,
+            jasoIndex,
+            lastJaso: currentJaso,
+            isEnd: false
+          })
+        } else if (timeout) {
+          callback(textContent, {
+            decomposedText,
+            charIndex,
+            jasoIndex,
+            lastJaso: decomposedText[decomposedText.length - 1][decomposedText[decomposedText.length - 1].length - 1],
+            isEnd: true
+          })
+          clearTimeout(timeout);
         }
-        timeout = setTimeout(typeCharacter, newLineOrEnd ? delay.perLineOrDot : isSpaceChar ? delay.perWord : afterHangulCombination ? delay.perHangul : delay.perChar);
-        callback(textContent, {
-          decomposedText,
-          charIndex,
-          jasoIndex,
-          lastJaso: currentJaso,
-          isEnd: false
-        })
-      } else if (timeout) {
-        callback(textContent, {
-          decomposedText,
-          charIndex,
-          jasoIndex,
-          lastJaso: decomposedText[decomposedText.length - 1][decomposedText[decomposedText.length - 1].length - 1],
-          isEnd: true
-        })
-        clearTimeout(timeout);
       }
+      typeCharacter()
     }
-    typeCharacter()
-  }
-export default typeStream
+  return typeStream
+}
+export default createTypeStream

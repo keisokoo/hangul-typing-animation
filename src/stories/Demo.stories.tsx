@@ -1,14 +1,79 @@
 import { Meta } from '@storybook/react'
-import React, { useState } from 'react'
-import { typeStream } from '../'
+import React, { useEffect, useState } from 'react'
+import { delay, createTypeStream } from '../'
 
+interface CursorProps
+  extends React.DetailedHTMLProps<
+    React.HTMLAttributes<HTMLSpanElement>,
+    HTMLSpanElement
+  > {
+  typing?: boolean
+  char?: string | JSX.Element
+}
+
+const Cursor = ({ typing, char = '|', ...props }: CursorProps) => {
+  const cursor = React.useRef<HTMLSpanElement>(null)
+  const timeout = React.useRef<NodeJS.Timeout>()
+  const [hide, set_hide] = useState<boolean>(false)
+
+  useEffect(() => {
+    function endBlink() {
+      if (timeout.current) {
+        clearTimeout(timeout.current)
+      }
+
+      if (cursor.current) {
+        cursor.current.style.opacity = '1'
+      }
+    }
+    function blink() {
+      if (cursor.current) {
+        cursor.current.style.opacity =
+          cursor.current.style.opacity === '0' ? '1' : '0'
+      }
+      timeout.current = setTimeout(blink, 500)
+    }
+    if (typing) {
+      endBlink()
+    } else {
+      blink()
+    }
+    return () => {
+      endBlink()
+    }
+  }, [typing])
+  useEffect(() => {
+    function destroy() {
+      if (timeout.current) {
+        clearTimeout(timeout.current)
+      }
+    }
+    if (hide) {
+      destroy()
+    }
+    return () => {
+      destroy()
+    }
+  }, [])
+  if (hide) {
+    return null
+  }
+  return (
+    <span ref={cursor} {...props}>
+      {char}
+    </span>
+  )
+}
+
+const typeStream = createTypeStream()
 export const Demo: React.FC = () => {
   const [value, setValue] = React.useState('')
   const [isStream, set_isStream] = useState<boolean>(false)
   return (
     <div style={{ whiteSpace: 'pre-line', width: '500px' }}>
       <button
-        onClick={() => {
+        onClick={async () => {
+          await delay(2000)
           typeStream(
             `안녕하세요, 밥이빱이
 되었습니다.
@@ -31,7 +96,7 @@ export const Demo: React.FC = () => {
       </button>
       <h1>
         {value}
-        {isStream ? `_` : ''}
+        {<Cursor typing={isStream} style={{ color: 'red' }} />}
       </h1>
     </div>
   )
@@ -43,7 +108,7 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-  tags: ['autodocs'],
+  tags: [''],
   argTypes: {},
 } satisfies Meta<typeof Demo>
 

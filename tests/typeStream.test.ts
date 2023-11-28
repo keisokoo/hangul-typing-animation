@@ -1,4 +1,4 @@
-import { composeHangul, decomposeHangul, isInJongSung, isNewLineOrDot, isSpaceCharacter, typeStream } from "../src";
+import { composeHangul, decomposeHangul, isInJongSung, isNewLineOrDot, isSpaceCharacter, createTypeStream } from "../src";
 
 jest.useFakeTimers();
 
@@ -28,11 +28,13 @@ describe('composeHangul', () => {
 
 describe('typeStream', () => {
   it('should be defined', () => {
+    const typeStream = createTypeStream();
     expect(typeStream).toBeDefined();
   })
   it('result should be 안녕, lastJaso is ㅇ', () => {
     let result = '';
     let lastJaso = ''
+    const typeStream = createTypeStream();
     typeStream('안녕', (value, stream) => {
       result = value;
       lastJaso = stream.lastJaso
