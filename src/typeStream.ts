@@ -10,8 +10,11 @@ const JONGSUNG_LIST = [
 const BASE_CODE = 0xAC00;
 const CHOSUNG_BASE = 588;
 const JUNGSUNG_BASE = 28;
-export function isNewLineOrDot(text: string): boolean {
-  return /\n|\./.test(text);
+export function isNewLine(text: string): boolean {
+  return /\n/.test(text);
+}
+export function isDot(text: string): boolean {
+  return /\./.test(text);
 }
 export function isInJongSung(text: string): boolean {
   return JONGSUNG_LIST.includes(text);
@@ -62,8 +65,9 @@ export function composeHangul(decomposed: string[][]): string {
 export type TypeStreamDelayOptions = {
   perHangul?: number,
   perChar?: number,
-  perLineOrDot?: number,
   perWord?: number,
+  perLine?: number,
+  perDot?: number,
 }
 export type TypeStreamData = {
   decomposedText: string[][], charIndex: number, jasoIndex: number, lastJaso: string, isEnd?: boolean
@@ -80,7 +84,8 @@ function createTypeStream(delayOptions: TypeStreamDelayOptions = {
   perChar: 40,
   perHangul: 80,
   perWord: 160,
-  perLineOrDot: 320
+  perLine: 320,
+  perDot: 320
 }) {
   let currentAnimationId = 0;
   const typeStream: TypeStream =
@@ -104,10 +109,12 @@ function createTypeStream(delayOptions: TypeStreamDelayOptions = {
           const currentCharJasos = word.slice(0, jasoIndex + 1);
           const currentJaso = currentCharJasos[currentCharJasos.length - 1];
           const afterHangulCombination = word.length > 1 && jasoIndex === word.length - 1;
-          let newLineOrEnd = false;
+          let newLine = false;
+          let endDot = false;
           let isSpaceChar = false;
           if (isSpaceCharacter(currentJaso)) isSpaceChar = true;
-          if (isNewLineOrDot(currentJaso)) newLineOrEnd = true;
+          if (isNewLine(currentJaso)) newLine = true;
+          if (isDot(currentJaso)) endDot = true;
           const combinedChar = composeHangul([currentCharJasos]);
           if (charIndex > 0 && prevWord.length === 2 && currentCharJasos.length === 1 && isInJongSung(currentJaso)) {
             let tempLastChar = prevWord.concat(currentJaso);
@@ -122,7 +129,7 @@ function createTypeStream(delayOptions: TypeStreamDelayOptions = {
             charIndex++;
             jasoIndex = 0;
           }
-          timeout = setTimeout(typeCharacter, newLineOrEnd ? currentDelayOptions.perLineOrDot : isSpaceChar ? currentDelayOptions.perWord : afterHangulCombination ? currentDelayOptions.perHangul : currentDelayOptions.perChar);
+          timeout = setTimeout(typeCharacter, newLine ? currentDelayOptions.perLine : endDot ? currentDelayOptions.perDot : isSpaceChar ? currentDelayOptions.perWord : afterHangulCombination ? currentDelayOptions.perHangul : currentDelayOptions.perChar);
           callback(textContent, {
             decomposedText,
             charIndex,

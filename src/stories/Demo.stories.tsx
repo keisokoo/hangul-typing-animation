@@ -65,7 +65,13 @@ const Cursor = ({ typing, char = '|', ...props }: CursorProps) => {
   )
 }
 
-const typeStream = createTypeStream()
+const typeStream = createTypeStream({
+  perChar: 10,
+  perWord: 20,
+  perHangul: 20,
+  perLine: 500,
+  perDot: 100,
+})
 export const Demo: React.FC = () => {
   const [value, setValue] = React.useState('')
   const [isStream, set_isStream] = useState<boolean>(false)
@@ -82,12 +88,6 @@ export const Demo: React.FC = () => {
             (result, stream) => {
               setValue(result)
               set_isStream(!stream.isEnd)
-            },
-            {
-              perChar: 100,
-              perWord: 200,
-              perHangul: 200,
-              perLineOrDot: 1000,
             }
           )
         }}

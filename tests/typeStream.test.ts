@@ -1,4 +1,4 @@
-import { composeHangul, decomposeHangul, isInJongSung, isNewLineOrDot, isSpaceCharacter, createTypeStream } from "../src";
+import { composeHangul, decomposeHangul, isInJongSung, isDot, isNewLine, isSpaceCharacter, createTypeStream } from "../src";
 
 jest.useFakeTimers();
 
@@ -34,15 +34,16 @@ describe('typeStream', () => {
   it('result should be 안녕, lastJaso is ㅇ', () => {
     let result = '';
     let lastJaso = ''
-    const typeStream = createTypeStream();
-    typeStream('안녕', (value, stream) => {
-      result = value;
-      lastJaso = stream.lastJaso
-    }, {
+    const typeStream = createTypeStream({
       perChar: 0,
       perHangul: 0,
       perWord: 0,
-      perLineOrDot: 0
+      perDot: 0,
+      perLine: 0
+    });
+    typeStream('안녕', (value, stream) => {
+      result = value;
+      lastJaso = stream.lastJaso
     });
     jest.advanceTimersByTime(350)
     expect(result).toEqual('안녕');
@@ -50,18 +51,26 @@ describe('typeStream', () => {
   })
 })
 
-describe('isNewLineOrDot', () => {
+describe('isNewLinet', () => {
   it('should be defined', () => {
-    expect(isNewLineOrDot).toBeDefined();
+    expect(isNewLine).toBeDefined();
   })
   it('"-" should be false', () => {
-    expect(isNewLineOrDot('-')).toBeFalsy();
-  })
-  it('"." should be true', () => {
-    expect(isNewLineOrDot('.')).toBeTruthy();
+    expect(isNewLine('-')).toBeFalsy();
   })
   it('"\\n" should be true', () => {
-    expect(isNewLineOrDot('\n')).toBeTruthy();
+    expect(isNewLine('\n')).toBeTruthy();
+  })
+})
+describe('isDot', () => {
+  it('should be defined', () => {
+    expect(isDot).toBeDefined();
+  })
+  it('"-" should be false', () => {
+    expect(isDot('-')).toBeFalsy();
+  })
+  it('"\\n" should be true', () => {
+    expect(isDot('.')).toBeTruthy();
   })
 })
 describe('isInJongSung', () => {
