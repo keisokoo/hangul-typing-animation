@@ -26,9 +26,8 @@ During this process, Korean double consonants and double vowels are not separate
 
 However, combined consonants and vowels are separately decomposed and processed.
 
-
+***
 <br/><br/>
----
 <br/><br/>
 
 ## Installation
@@ -42,7 +41,6 @@ yarn add hangul-typing-animation
 ```
 
 <br/><br/>
----
 <br/><br/>
 
 ## Usage for typing animation (타이핑 애니메이션)
@@ -82,8 +80,6 @@ const runAnimation = async () => {
 runAnimation()
 ```
 
-<br/><br/>
----
 <br/><br/>
 
 #### DelayOptions
