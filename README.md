@@ -80,8 +80,6 @@ const runAnimation = async () => {
 runAnimation()
 ```
 
-<br/><br/>
-
 #### DelayOptions
 
 전체 (milliseconds) 단위 입니다.
@@ -94,6 +92,9 @@ All options are in milliseconds.
 - **`perLine`** : 줄바꿈 하나당 딜레이 시간 (Default: 0), per line delay time (Default: 0),
 - **`perDot`** : 마침표 하나당 딜레이 시간 (Default: 320), per dot delay time (Default: 320)
 
+<br/><br/>
+<br/><br/>
+<br/><br/>
 
 ## Usage for decompose and compose hangul(Optional) (한글 자소 분해, 재결합)
 
