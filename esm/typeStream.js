@@ -1,4 +1,3 @@
-import { __assign } from "tslib";
 var CHOSUNG_LIST = [
     'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
 ]; // 19
@@ -135,7 +134,14 @@ function createTypeStream(delayOptions) {
     var currentAnimationId = 0;
     var typeStream = function typeHangulStream(text, callback, currentDelay) {
         return new Promise(function (resolve, reject) {
-            var currentDelayOptions = __assign(__assign(__assign({}, defaultDelayOptions), delayOptions), currentDelay);
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+            var currentDelayOptions = {
+                perChar: (_b = (_a = currentDelay === null || currentDelay === void 0 ? void 0 : currentDelay.perChar) !== null && _a !== void 0 ? _a : delayOptions === null || delayOptions === void 0 ? void 0 : delayOptions.perChar) !== null && _b !== void 0 ? _b : defaultDelayOptions.perChar,
+                perHangul: (_d = (_c = currentDelay === null || currentDelay === void 0 ? void 0 : currentDelay.perHangul) !== null && _c !== void 0 ? _c : delayOptions === null || delayOptions === void 0 ? void 0 : delayOptions.perHangul) !== null && _d !== void 0 ? _d : defaultDelayOptions.perHangul,
+                perSpace: (_f = (_e = currentDelay === null || currentDelay === void 0 ? void 0 : currentDelay.perSpace) !== null && _e !== void 0 ? _e : delayOptions === null || delayOptions === void 0 ? void 0 : delayOptions.perSpace) !== null && _f !== void 0 ? _f : defaultDelayOptions.perSpace,
+                perLine: (_h = (_g = currentDelay === null || currentDelay === void 0 ? void 0 : currentDelay.perLine) !== null && _g !== void 0 ? _g : delayOptions === null || delayOptions === void 0 ? void 0 : delayOptions.perLine) !== null && _h !== void 0 ? _h : defaultDelayOptions.perLine,
+                perDot: (_k = (_j = currentDelay === null || currentDelay === void 0 ? void 0 : currentDelay.perDot) !== null && _j !== void 0 ? _j : delayOptions === null || delayOptions === void 0 ? void 0 : delayOptions.perDot) !== null && _k !== void 0 ? _k : defaultDelayOptions.perDot
+            };
             var thisAnimationId = ++currentAnimationId;
             var decomposedText = decomposeHangul(text);
             var textContent = '';

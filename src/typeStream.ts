@@ -164,7 +164,13 @@ function createTypeStream(delayOptions?: TypeStreamDelayOptions) {
   const typeStream: TypeStream =
     function typeHangulStream(text: string, callback: (typing: string, stream: TypeStreamData) => void, currentDelay?: TypeStreamDelayOptions) {
       return new Promise((resolve, reject) => {
-        const currentDelayOptions = { ...defaultDelayOptions, ...delayOptions, ...currentDelay }
+        const currentDelayOptions = {
+          perChar: currentDelay?.perChar ?? delayOptions?.perChar ?? defaultDelayOptions.perChar,
+          perHangul: currentDelay?.perHangul ?? delayOptions?.perHangul ?? defaultDelayOptions.perHangul,
+          perSpace: currentDelay?.perSpace ?? delayOptions?.perSpace ?? defaultDelayOptions.perSpace,
+          perLine: currentDelay?.perLine ?? delayOptions?.perLine ?? defaultDelayOptions.perLine,
+          perDot: currentDelay?.perDot ?? delayOptions?.perDot ?? defaultDelayOptions.perDot
+        }
         const thisAnimationId = ++currentAnimationId;
         const decomposedText = decomposeHangul(text);
         let textContent = ''
