@@ -1,6 +1,7 @@
 import { Meta } from '@storybook/react'
 import React, { useEffect, useState } from 'react'
 import { delay, createTypeStream } from '../'
+import './Demo.css'
 
 interface CursorProps
   extends React.DetailedHTMLProps<
@@ -11,10 +12,9 @@ interface CursorProps
   char?: string | JSX.Element
 }
 
-const Cursor = ({ typing, char = '|', ...props }: CursorProps) => {
+const Cursor = ({ typing, char = '|', className, ...props }: CursorProps) => {
   const cursor = React.useRef<HTMLSpanElement>(null)
   const timeout = React.useRef<NodeJS.Timeout>()
-  const [hide, set_hide] = useState<boolean>(false)
 
   useEffect(() => {
     function endBlink() {
@@ -42,61 +42,52 @@ const Cursor = ({ typing, char = '|', ...props }: CursorProps) => {
       endBlink()
     }
   }, [typing])
-  useEffect(() => {
-    function destroy() {
-      if (timeout.current) {
-        clearTimeout(timeout.current)
-      }
-    }
-    if (hide) {
-      destroy()
-    }
-    return () => {
-      destroy()
-    }
-  }, [])
-  if (hide) {
-    return null
-  }
   return (
-    <span ref={cursor} {...props}>
-      {char}
+    <span ref={cursor} className={'cursor-wrap ' + className} {...props}>
+      <span className="cursor">{char}</span>
     </span>
   )
 }
 
 const typeStream = createTypeStream({
-  perChar: 10,
-  perWord: 20,
-  perHangul: 20,
-  perLine: 500,
-  perDot: 100,
+  perChar: 30,
+  perSpace: 0,
+  perHangul: 60,
+  perLine: 0,
+  perDot: 300,
 })
 export const Demo: React.FC = () => {
   const [value, setValue] = React.useState('')
   const [isStream, set_isStream] = useState<boolean>(false)
+  const [isEnd, set_isEnd] = useState<boolean>(false)
   return (
     <div style={{ whiteSpace: 'pre-line', width: '500px' }}>
       <button
         onClick={async () => {
+          set_isEnd(false)
+          setValue('')
+          set_isStream(false)
           await delay(2000)
-          typeStream(
-            `안녕하세요, 밥이빱이
-되었습니다.
-그리고 무궁화 꽃이 피었습니다. and You are the best!
-1337`,
-            (result, stream) => {
+          await typeStream(
+            `무궁화 꽃이 피었습니다.
+            동해물과 백두산이 마르고 닳도록
+            하느님이 보우하사 우리나라 만세.
+            Korea history is very long. about 5000 years.
+            Korean is a language isolate spoken mainly in South Korea and North Korea by about 63 million people.`,
+            async (result, stream) => {
               setValue(result)
               set_isStream(!stream.isEnd)
             }
           )
+          await delay(4100)
+          set_isEnd(true)
         }}
       >
         Run
       </button>
       <h1>
         {value}
-        {<Cursor typing={isStream} style={{ color: 'red' }} />}
+        {!isEnd && <Cursor typing={isStream} style={{ color: 'blue' }} />}
       </h1>
     </div>
   )

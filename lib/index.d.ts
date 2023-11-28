@@ -12,6 +12,6 @@ declare function typeStream(text: string, callback: (string: string, stream: {
     perHangul?: number;
     perChar?: number;
     perSentence?: number;
-    perWord?: number;
+    perSpace?: number;
 }): void;
 export default typeStream;

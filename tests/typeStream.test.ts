@@ -37,7 +37,7 @@ describe('typeStream', () => {
     const typeStream = createTypeStream({
       perChar: 0,
       perHangul: 0,
-      perWord: 0,
+      perSpace: 0,
       perDot: 0,
       perLine: 0
     });

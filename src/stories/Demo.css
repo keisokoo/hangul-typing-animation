@@ -1,0 +1,10 @@
+.cursor-wrap {
+  color: inherit;
+  width: 0;
+  height: auto;
+  position: relative;
+}
+.cursor-wrap .cursor {
+  position: absolute;
+  transform: translateX(-50%);
+}
