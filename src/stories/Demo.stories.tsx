@@ -1,6 +1,6 @@
 import { Meta } from '@storybook/react'
 import React, { useEffect, useState } from 'react'
-import { delay, createTypeStream, decomposeHangul } from '../'
+import { createTypeStream } from '../'
 import './Demo.css'
 
 interface CursorProps
@@ -56,38 +56,39 @@ const typeStream = createTypeStream({
   perLine: 0,
   perDot: 300,
 })
+
+// 겹자음과 겹모읍은 따로 분리되어 처리됩니다.
+// 겹자모의 예는 다음과 같습니다.
+// 꿹뷁뷹같은 글자, 읽다, 읎다. 핥다. 앉거나, 없다.
+// English or number also supported.
+// 1234567890
+// 예제 끝!
 export const Demo: React.FC = () => {
   const [value, setValue] = React.useState('')
   const [isStream, set_isStream] = useState<boolean>(false)
   const [isEnd, set_isEnd] = useState<boolean>(false)
+  const [streamStatus, set_streamStatus] = useState<
+    'stopped' | 'playing' | 'done'
+  >('stopped')
   return (
     <div style={{ whiteSpace: 'pre-line', width: '500px' }}>
       <button
         onClick={async () => {
-          const decomposedText = decomposeHangul('앉았다.')
-          console.log(decomposedText)
           set_isEnd(false)
           setValue('')
           set_isStream(false)
-          await delay(2000)
           await typeStream(
-            `쌍자음과 쌍모음은 분리하지 않고 키보드 입력처럼 한번에 처리합니다.
-            겹자음과 겹모읍은 따로 분리되어 처리됩니다.
-            겹자모의 예는 다음과 같습니다.
-            꿹뷁뷹같은 글자, 읽다, 읎다. 핥다. 앉거나, 없다.
-            English or number also supported.
-            1234567890
-            예제 끝!`,
+            `쌍자음과 쌍모음은 분리하지 않고 키보드 입력처럼 한번에 처리합니다.`,
             async (result, stream) => {
               setValue(result)
               set_isStream(!stream.isEnd)
+              set_streamStatus(stream.status)
             }
           )
-          await delay(4100)
           set_isEnd(true)
         }}
       >
-        Run
+        {streamStatus}
       </button>
       <h1>
         {value}

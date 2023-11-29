@@ -134,19 +134,14 @@ export type TypeStreamDelayOptions = {
   perLine?: number,
   perDot?: number,
 }
+export type TypeStreamStatus = 'stopped' | 'playing' | 'done'
 export type TypeStreamData = {
-  decomposedText: string[][], charIndex: number, jasoIndex: number, lastJaso: string, isEnd?: boolean
+  decomposedText: string[][], charIndex: number, jasoIndex: number, lastJaso: string, isEnd?: boolean,
+  status: TypeStreamStatus
 }
-export type TypeStreamCallback = (typing: string, stream: {
-  decomposedText: string[][], charIndex: number, jasoIndex: number, lastJaso: string, isEnd?: boolean
-}) => void
-export type TypeStreamResult = {
-  textContent: string,
-  decomposedText: string[][],
-  charIndex: number,
-  jasoIndex: number,
-  lastJaso: string,
-  isEnd: boolean
+export type TypeStreamCallback = (typing: string, stream: TypeStreamData) => void
+export type TypeStreamResult = TypeStreamData & {
+  textContent: string
 }
 export type TypeStream = (text: string, callback: TypeStreamCallback, delay?: TypeStreamDelayOptions) => Promise<TypeStreamResult>
 export const delay = (milliseconds: number) => {
@@ -161,9 +156,28 @@ const defaultDelayOptions: TypeStreamDelayOptions = {
 }
 function createTypeStream(delayOptions?: TypeStreamDelayOptions) {
   let currentAnimationId = 0;
+  let textContent = ''
+  let timeout: NodeJS.Timeout | null = null;
+  let currentText: string = '';
+  let charIndex = 0;
+  let jasoIndex = 0;
+  let typeLength = 1;
+  let done = false;
+  let fireCount = 0;
+
+  function restoreValues() {
+    currentAnimationId = fireCount;
+    textContent = ''
+    timeout = null;
+    currentText = '';
+    charIndex = 0;
+    jasoIndex = 0;
+    typeLength = 1;
+    done = false;
+  }
   const typeStream: TypeStream =
     function typeHangulStream(text: string, callback: (typing: string, stream: TypeStreamData) => void, currentDelay?: TypeStreamDelayOptions) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         const currentDelayOptions = {
           perChar: currentDelay?.perChar ?? delayOptions?.perChar ?? defaultDelayOptions.perChar,
           perHangul: currentDelay?.perHangul ?? delayOptions?.perHangul ?? defaultDelayOptions.perHangul,
@@ -172,19 +186,10 @@ function createTypeStream(delayOptions?: TypeStreamDelayOptions) {
           perDot: currentDelay?.perDot ?? delayOptions?.perDot ?? defaultDelayOptions.perDot
         }
         const thisAnimationId = ++currentAnimationId;
+        fireCount = thisAnimationId;
         const decomposedText = decomposeHangul(text);
-        let textContent = ''
-        let currentText: string = '';
-        let charIndex = 0;
-        let jasoIndex = 0;
-        let timeout: NodeJS.Timeout;
-        let typeLength = 1;
 
         function typeCharacter() {
-          if (thisAnimationId !== currentAnimationId) {
-            reject(new Error('Animation canceled'));
-            return clearTimeout(timeout);
-          }
           if (charIndex < decomposedText.length) {
             const word = decomposedText[charIndex];
             const prevWord = charIndex > 0 ? decomposedText[charIndex - 1] : [];
@@ -194,6 +199,23 @@ function createTypeStream(delayOptions?: TypeStreamDelayOptions) {
             currentJaso = jasoLength === 1 || typeLength !== 1 ? currentJaso : currentJaso[0];
             currentCharJasos = jasoLength === 1 || typeLength !== 1 ? currentCharJasos : changeLast(currentCharJasos, currentJaso);
             const afterHangulCombination = word.length > 1 && jasoIndex === word.length - 1;
+
+
+            if (thisAnimationId !== currentAnimationId) {
+              currentAnimationId = 0
+              callback(textContent, {
+                decomposedText,
+                charIndex,
+                jasoIndex,
+                lastJaso: currentJaso,
+                isEnd: false,
+                status: 'stopped'
+              })
+              if (timeout) clearTimeout(timeout);
+              return
+            }
+
+
             let newLine = false;
             let endDot = false;
             let isSpaceChar = false;
@@ -226,15 +248,19 @@ function createTypeStream(delayOptions?: TypeStreamDelayOptions) {
               charIndex,
               jasoIndex,
               lastJaso: currentJaso,
-              isEnd: false
+              isEnd: false,
+              status: 'playing'
             })
           } else if (timeout) {
+            done = true;
+            currentAnimationId = 0;
             callback(textContent, {
               decomposedText,
               charIndex,
               jasoIndex,
               lastJaso: decomposedText[decomposedText.length - 1][decomposedText[decomposedText.length - 1].length - 1],
-              isEnd: true
+              isEnd: true,
+              status: 'done'
             })
             clearTimeout(timeout);
             resolve({
@@ -243,10 +269,12 @@ function createTypeStream(delayOptions?: TypeStreamDelayOptions) {
               charIndex,
               jasoIndex,
               lastJaso: decomposedText[decomposedText.length - 1][decomposedText[decomposedText.length - 1].length - 1],
-              isEnd: true
+              isEnd: true,
+              status: 'done'
             });
           }
         }
+        if (done) restoreValues();
         typeCharacter()
       })
     }
