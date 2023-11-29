@@ -5,11 +5,8 @@
 의존성이 없기에 기본적인 `DOM`이나 `Node.js` 환경은 물론, `React`, `Vue`, `Angular` 등의 프레임워크에서도 사용할 수 있습니다.
 
 한글은 자소 단위로 분해되어 타이핑 애니메이션이 진행됩니다.
-
 영어나 숫자는 그대로 타이핑 애니메이션이 진행됩니다.
-
 이때 한글의 쌍자음과 쌍모음은 분리하지 않고 키보드 입력처럼 한번에 처리합니다.
-
 하지만 겹자음과 겹모음은 따로 분리되어 처리되도록 하였습니다.
 
 <br/><br/>
@@ -19,11 +16,8 @@
 It has no dependencies, so it can be used in basic `DOM` or `Node.js` environments, as well as in frameworks like `React`, `Vue`, and `Angular`.
 
 Korean characters are decomposed into individual components (`jamos`) for the typing animation.
-
 English letters and numbers are animated as they are, without decomposition.
-
 During this process, Korean double consonants and double vowels are not separated and are treated as a single keyboard input.
-
 However, combined consonants and vowels are separately decomposed and processed.
 
 ***
@@ -94,6 +88,7 @@ All options are in milliseconds.
 - **`perSpace`** : 공백 하나당 딜레이 시간 (Default: 0), per space delay time (Default: 0),
 - **`perLine`** : 줄바꿈 하나당 딜레이 시간 (Default: 0), per line delay time (Default: 0),
 - **`perDot`** : 마침표 하나당 딜레이 시간 (Default: 320), per dot delay time (Default: 320)
+- **`toggle`** : true면 이벤트를 다시 호출했을때, 일시 정지 합니다. (Default: false), If true, it will pause when the event is called again. (Default: false)
 
 <br/><br/>
 <br/><br/>
@@ -130,6 +125,7 @@ type TypeStreamDelayOptions = {
   perSpace?: number,
   perLine?: number,
   perDot?: number,
+  toggle?: boolean
 }
 
 type CreateTypeStream = (options?: TypeStreamDelayOptions) => TypeStream;
