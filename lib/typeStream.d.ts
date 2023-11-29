@@ -10,28 +10,20 @@ export type TypeStreamDelayOptions = {
     perSpace?: number;
     perLine?: number;
     perDot?: number;
+    toggle?: boolean;
 };
+export type TypeStreamStatus = 'stopped' | 'playing' | 'done';
 export type TypeStreamData = {
     decomposedText: string[][];
     charIndex: number;
     jasoIndex: number;
     lastJaso: string;
     isEnd?: boolean;
+    status: TypeStreamStatus;
 };
-export type TypeStreamCallback = (typing: string, stream: {
-    decomposedText: string[][];
-    charIndex: number;
-    jasoIndex: number;
-    lastJaso: string;
-    isEnd?: boolean;
-}) => void;
-export type TypeStreamResult = {
+export type TypeStreamCallback = (typing: string, stream: TypeStreamData) => void;
+export type TypeStreamResult = TypeStreamData & {
     textContent: string;
-    decomposedText: string[][];
-    charIndex: number;
-    jasoIndex: number;
-    lastJaso: string;
-    isEnd: boolean;
 };
 export type TypeStream = (text: string, callback: TypeStreamCallback, delay?: TypeStreamDelayOptions) => Promise<TypeStreamResult>;
 export declare const delay: (milliseconds: number) => Promise<unknown>;
