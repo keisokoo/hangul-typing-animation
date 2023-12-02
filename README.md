@@ -1,8 +1,12 @@
+## Demo in React
+[![Edit elated-heisenberg-d2zd92](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/elated-heisenberg-d2zd92?file=%2Fsrc%2FApp.tsx%3A39%2C42)
+<br/><br/>
+
 # hangul-typing-animation
 
 `hangul-typing-animation`은 한글 타이핑 애니메이션을 쉽게 구현할 수 있는 라이브러리입니다.
 
-의존성이 없기에 기본적인 `DOM`이나 `Node.js` 환경은 물론, `React`, `Vue`, `Angular` 등의 프레임워크에서도 사용할 수 있습니다.
+기본적인 `HTML DOM`이나, `React`, `Vue`, `Angular` 등의 프레임워크에서 사용할 수 있습니다.
 
 한글은 자소 단위로 분해되어 타이핑 애니메이션이 진행됩니다.
 영어나 숫자는 그대로 타이핑 애니메이션이 진행됩니다.
@@ -36,11 +40,8 @@ yarn add hangul-typing-animation
 
 <br/><br/>
 <br/><br/>
-## Demo in React
-[![Edit elated-heisenberg-d2zd92](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/elated-heisenberg-d2zd92?file=%2Fsrc%2FApp.tsx%3A39%2C42)
-<br/><br/>
 
-## Usage for typing animation (타이핑 애니메이션)
+## Default Usage(타이핑 애니메이션 기본 사용법)
 
 ```html
 <div id="typing"></div>
@@ -94,7 +95,7 @@ All options are in milliseconds.
 <br/><br/>
 <br/><br/>
 
-## Usage for decompose and compose hangul(Optional) (한글 자소 분해, 재결합)
+## Usage for decompose and compose korean (한글 자소 분해, 재결합)
 
 애니메이션을 위해 한글을 자소 단위로 분해하고, 애니메이션이 끝난 후에는 다시 합쳐야 할 경우 사용합니다.
 
