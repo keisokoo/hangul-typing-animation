@@ -211,7 +211,7 @@ function createTypeStream(delayOptions?: TypeStreamDelayOptions) {
                 jasoIndex,
                 lastJaso: currentJaso,
                 isEnd: false,
-                status: 'stopped'
+                status: currentDelayOptions.toggle ? 'stopped' : 'restart'
               })
               if (currentDelayOptions.toggle) {
                 if (timeout) clearTimeout(timeout);
