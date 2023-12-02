@@ -68,7 +68,7 @@ export const Demo: React.FC = () => {
     set_isEnd(false)
     setValue('')
     set_isStream(false)
-    await typeStream(
+    const result = await typeStream(
       `쌍자음과 쌍모음은 분리하지 않고 키보드 입력처럼 한번에 처리합니다.
       겹자음과 겹모읍은 따로 분리되어 처리됩니다.
       겹자모의 예는 다음과 같습니다.
@@ -82,6 +82,7 @@ export const Demo: React.FC = () => {
         set_streamStatus(stream.status)
       }
     )
+    console.log('result', result)
     set_isEnd(true)
   }
   return (

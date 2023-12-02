@@ -215,8 +215,26 @@ function createTypeStream(delayOptions?: TypeStreamDelayOptions) {
               })
               if (currentDelayOptions.toggle) {
                 if (timeout) clearTimeout(timeout);
+                resolve({
+                  textContent,
+                  decomposedText,
+                  charIndex,
+                  jasoIndex,
+                  lastJaso: decomposedText[decomposedText.length - 1][decomposedText[decomposedText.length - 1].length - 1],
+                  isEnd: false,
+                  status: 'stopped'
+                });
                 return
               } else {
+                resolve({
+                  textContent,
+                  decomposedText,
+                  charIndex,
+                  jasoIndex,
+                  lastJaso: decomposedText[decomposedText.length - 1][decomposedText[decomposedText.length - 1].length - 1],
+                  isEnd: false,
+                  status: 'playing'
+                });
                 restoreValues();
                 return
               }
