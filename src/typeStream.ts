@@ -226,7 +226,6 @@ function createTypeStream(delayOptions?: TypeStreamDelayOptions) {
                 });
                 return
               } else {
-                restoreValues();
                 resolve({
                   textContent,
                   decomposedText,
@@ -236,6 +235,7 @@ function createTypeStream(delayOptions?: TypeStreamDelayOptions) {
                   isEnd: false,
                   status: 'playing'
                 });
+                restoreValues();
                 return
               }
             }
