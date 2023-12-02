@@ -135,7 +135,7 @@ export type TypeStreamDelayOptions = {
   perDot?: number,
   toggle?: boolean
 }
-export type TypeStreamStatus = 'stopped' | 'playing' | 'done'
+export type TypeStreamStatus = 'stopped' | 'playing' | 'done' | 'restart'
 export type TypeStreamData = {
   decomposedText: string[][], charIndex: number, jasoIndex: number, lastJaso: string, isEnd?: boolean,
   status: TypeStreamStatus
@@ -233,7 +233,7 @@ function createTypeStream(delayOptions?: TypeStreamDelayOptions) {
                   jasoIndex,
                   lastJaso: decomposedText[decomposedText.length - 1][decomposedText[decomposedText.length - 1].length - 1],
                   isEnd: false,
-                  status: 'playing'
+                  status: 'restart'
                 });
                 restoreValues();
                 return

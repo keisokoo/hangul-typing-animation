@@ -138,6 +138,7 @@ type TypeStreamResult = {
   jasoIndex: number,
   lastJaso: string,
   isEnd: boolean
+  status: 'stopped' | 'playing' | 'done' | 'restart'
 }
 
 type TypeStream = (

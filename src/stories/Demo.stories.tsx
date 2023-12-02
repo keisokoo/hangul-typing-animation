@@ -62,7 +62,7 @@ export const Demo: React.FC = () => {
   const [isStream, set_isStream] = useState<boolean>(false)
   const [isEnd, set_isEnd] = useState<boolean>(false)
   const [streamStatus, set_streamStatus] = useState<
-    'stopped' | 'playing' | 'done'
+    'stopped' | 'playing' | 'done' | 'restart'
   >('stopped')
   const runTyping = async () => {
     set_isEnd(false)
